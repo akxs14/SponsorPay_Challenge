@@ -6,7 +6,7 @@ require 'dcf'
 
 namespace :sponsorpay do
   desc "retrieve and persist all the package data from a CRAN server"
-  task :get_cran do
+  task :get_cran => :environment do
     Dir.mkdir('tmp/CRANImporter')
     importer = CRANImporter.new
     importer.import_packages(importer.get_package_list)
