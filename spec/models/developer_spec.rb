@@ -15,17 +15,24 @@ describe Developer do
   end
 
   describe "#packages" do
-    it "should associate with the packages he authored" do
-      package = Package.new()
-      subject.authored_packages << package
-      subject.authored_packages[0].should == package
+    before do
+      my_package = Package.new(:name => "MyPackage!")
+      another_package = Package.new(:name => "AnotherPackage")
+      subject.authored_packages << my_package
+      subject.maintained_packages << another_package    
     end
 
-    it "should associate with the packages he maintained" do
-      package = Package.new()
-      subject.maintained_packages << package
-      subject.maintained_packages[0].should == package
+    it "should correctly identify the packages the developer authored" do
+      subject.authored_packages[0].name == "MyPackage!"
+    end
+
+    it "should correctly identify the packages the developer maintained" do
+      subject.maintained_packages[0].name == "AnotherPackage"
     end    
+
+    it "should not mix the authored and maintained packages" do
+      subject.authored_packages.length.should == 1 && subject.maintained_packages.length.should == 1
+    end
   end
 
 end

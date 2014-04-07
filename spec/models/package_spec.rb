@@ -23,6 +23,12 @@ describe Package do
       subject.maintainers << dev
       subject.maintainers[0].should == dev
     end
+
+    it "should identify correctly the authors and the maintainers" do
+      subject.authors << Developer.new(:name => "Tom")
+      subject.maintainers << Developer.new(:name => "Jerry")
+      subject.authors[0].name.should == "Tom" && subject.maintainers[0].name.should == "Jerry"
+    end
   end
 
   describe "#package_versions" do
