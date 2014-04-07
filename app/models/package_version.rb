@@ -1,3 +1,3 @@
 class PackageVersion < ActiveRecord::Base
-  belongs_to :package_versions
+  belongs_to :package
 end
