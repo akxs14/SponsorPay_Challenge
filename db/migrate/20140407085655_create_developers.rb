@@ -7,11 +7,16 @@ class CreateDevelopers < ActiveRecord::Migration
       t.timestamps
     end
 
-    create_table :developers_packages do |t|
+    create_table :authors_packages do |t|
       t.belongs_to :developers
       t.belongs_to :packages
     end
-  end
-end
 
+    create_table :maintainers_packages do |t|
+      t.belongs_to :developers
+      t.belongs_to :packages
+    end    
+  end
+
+end
 

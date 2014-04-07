@@ -11,7 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140407085655) do
+ActiveRecord::Schema.define(version: 20140407090917) do
+
+  create_table "authors_packages", force: true do |t|
+    t.integer "developers_id"
+    t.integer "packages_id"
+  end
 
   create_table "developers", force: true do |t|
     t.string   "name"
@@ -20,9 +25,23 @@ ActiveRecord::Schema.define(version: 20140407085655) do
     t.datetime "updated_at"
   end
 
-  create_table "developers_packages", force: true do |t|
+  create_table "maintainers_packages", force: true do |t|
     t.integer "developers_id"
     t.integer "packages_id"
+  end
+
+  create_table "package_versions", force: true do |t|
+    t.string   "version"
+    t.string   "r_version"
+    t.string   "dependencies"
+    t.string   "suggestions"
+    t.date     "pub_date"
+    t.string   "title"
+    t.string   "description"
+    t.string   "license"
+    t.integer  "package_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "packages", force: true do |t|
