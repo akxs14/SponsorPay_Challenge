@@ -20,6 +20,11 @@ ActiveRecord::Schema.define(version: 20140407085655) do
     t.datetime "updated_at"
   end
 
+  create_table "developers_packages", force: true do |t|
+    t.integer "developers_id"
+    t.integer "packages_id"
+  end
+
   create_table "packages", force: true do |t|
     t.string   "name"
     t.datetime "created_at"
