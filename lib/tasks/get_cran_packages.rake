@@ -7,7 +7,7 @@ require 'dcf'
 namespace :sponsorpay do
   desc "retrieve and persist all the package data from a CRAN server"
   task :get_cran => :environment do
-    Dir.mkdir('tmp/CRANImporter')
+    FileUtils.mkdir_p('tmp/CRANImporter')
     importer = CRANImporter.new
     importer.import_packages(importer.get_package_list)
     # FileUtils.rm_rf('tmp/CRANImporter')
@@ -26,8 +26,11 @@ class CRANImporter
     # package_list.each do |item|
       item =  package_list.first
       package = Dcf.parse(item).first
-      package_file = fetch_package_file(assemble_package_url(package["Package"], package["Version"]))
-      unzip_file(package_file)
+
+        package_file = fetch_package_file(assemble_package_url(package["Package"], package["Version"]))
+        unzip_file(package_file)
+        package = Package.new(name: package["Package"])
+        # read_package_version_data()
     # end
   end
 
@@ -45,6 +48,11 @@ class CRANImporter
 
   def unzip_file(file)
     `tar -xf #{file} -C tmp/CRANImporter`
+  end
+
+  def read_package_version_data(package_data)
+    data = Dcf.parse(package_data)
+    puts data
   end
 
 end
