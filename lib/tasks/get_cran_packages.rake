@@ -27,6 +27,7 @@ class CRANImporter
       item =  package_list.first
       package = Dcf.parse(item).first
       package_file = fetch_package_file(assemble_package_url(package["Package"], package["Version"]))
+      unzip_file(package_file)
     # end
   end
 
@@ -40,6 +41,10 @@ class CRANImporter
       open(url) {|uri| file.write(uri.read)}
     end
     local_file
+  end
+
+  def unzip_file(file)
+    `tar -xf #{file} -C tmp/CRANImporter`
   end
 
 end
