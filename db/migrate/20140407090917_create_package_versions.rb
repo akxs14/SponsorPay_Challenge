@@ -9,7 +9,7 @@ class CreatePackageVersions < ActiveRecord::Migration
       t.string :title
       t.string :description
       t.string :license
-      t.integer :package_id
+      t.integer :package_id, index: true
 
       t.timestamps
     end
