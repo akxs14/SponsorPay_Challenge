@@ -15,11 +15,20 @@ namespace :sponsorpay do
 end
 
 class CRANImporter
-  PACKAGES = "http://cran.r-project.org/src/contrib/PACKAGES"
-  LINES_PER_PACKAGE = 9
+  def packages
+    "http://cran.r-project.org/src/contrib/PACKAGES"
+  end
+
+  def tmp_folder
+    "tmp/CRANImporter"
+  end
+
+  def lines_per_package
+    9
+  end
 
   def get_package_list
-    (open(PACKAGES).read).split(/^$\n/)
+    (open(packages).read).split(/^$\n/)
   end
 
   def import_packages(package_list)
@@ -27,11 +36,24 @@ class CRANImporter
       item =  package_list.first
       package = Dcf.parse(item).first
 
-        package_file = fetch_package_file(assemble_package_url(package["Package"], package["Version"]))
-        unzip_file(package_file)
-        package = Package.new(name: package["Package"])
-        # read_package_version_data()
-    # end
+      package_file = fetch_package_file(assemble_package_url(package["Package"], package["Version"]))
+      unzip_file(package_file)
+
+      pack = Package.find_or_initialize_by_name(package["Package"])
+      pack_version, author, maintainer = read_package_version_data(package_description(tmp_folder,package["Package"]))
+      add_version_data(pack, pack_version, author, maintainer).save
+    #end
+  end
+
+  def add_version_data(package, pack_version, author, maintainer)
+    package.package_versions << pack_version if !package.package_versions.find_by_version(pack_version.version)
+    # package.authors << author if !package.authors.find_by_name(author.name)
+    # package.maintainers << maintainer if !package.maintainers.find_by_name(maintainer.name)
+    package
+  end
+
+  def package_description(folder, package_name)
+    "#{folder}/#{package_name}/DESCRIPTION"
   end
 
   def assemble_package_url(name, version)
@@ -50,9 +72,28 @@ class CRANImporter
     `tar -xf #{file} -C tmp/CRANImporter`
   end
 
-  def read_package_version_data(package_data)
-    data = Dcf.parse(package_data)
-    puts data
+  def add_developer(dev_data)
+    dev = Developer.find_or_initialize_by_name(dev_data[0])
+    dev.email = dev_data[1] if dev_data[1]
+    dev
+  end
+
+  def read_package_version_data(package_description)
+    file = open(package_description).read
+    data = Dcf.parse(file)[0]
+    [ 
+      PackageVersion.new(
+        version: data["Version"],
+        dependencies: data["Depends"],
+        suggestions: data["Suggests"],
+        pub_date: data["Date/Publication"],
+        title: data["Title"],
+        description: data["Description"],
+        license: data["License"]
+      ),
+      add_developer(data["Author"].split("<")),
+      add_developer(data["Maintainer"].split("<"))
+    ]
   end
 
 end
