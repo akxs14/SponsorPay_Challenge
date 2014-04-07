@@ -8,3 +8,5 @@ class CreateDevelopers < ActiveRecord::Migration
     end
   end
 end
+
+
